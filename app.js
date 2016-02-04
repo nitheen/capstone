@@ -91,7 +91,7 @@ function updateData(req, res, next) {
   var data = req.body;
   var dataID = req.params.id;
 
-  r.table('customerData').get(data)ID.update(data, {returnChanges: true}).run(req.app._rdbConn, function(err, result) {
+  r.table('customerData').get(dataID).update(data, {returnChanges: true}).run(req.app._rdbConn, function(err, result) {
     if(err) {
       return next(err);
     }
