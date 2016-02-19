@@ -15,7 +15,7 @@ app.use(express.static(__dirname + '/public'));
 app.use(bodyParser.json());
 
 //The REST routes for "index".
-app.route('/index')
+app.route('/index')  
   .get(listData)
   .post(createData);
 
@@ -24,16 +24,38 @@ app.route('/index/:id')
   .put(updateData)
   .delete(deleteData);
 
+app.route('/update/:id')
+  .post(updateTimer);
 //If we reach this middleware the route could not be handled and must be unknown.
 app.use(handle404);
 
 //Generic error handling middleware.
 app.use(handleError);
-
-
 /*
  * Retrieve all items.
  */
+
+function updateTimer(req, res, next) {
+  console.log(req.params);
+  console.log(req.body);
+  var data = req.body.counter;
+  var dataID = req.params.id;
+  console.log("Got a POST request for the homepage");
+  console.log(data);
+  response = {
+       "session_length":req.body.counter
+   };
+  console.log(response);
+  r.table('customerData').get(dataID).update({"session_length": data}, {returnChanges: true}).run(req.app._rdbConn, function(err, result) {
+    if(err) {
+      return next(err);
+    }
+
+    res.json(result.changes[0].new_val);
+  });
+}
+
+
 function listData(req, res, next) {
   r.table('customerData').orderBy({index: 'createdAt'}).run(req.app._rdbConn, function(err, cursor) {
     if(err) {
