@@ -1,0 +1,1 @@
+var mehmetcankerApp = angular.module("mehmetcankerApp", ['Routes']);
