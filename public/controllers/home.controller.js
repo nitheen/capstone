@@ -1,6 +1,6 @@
 angular.module('mehmetcankerApp').controller("HomeController",['$scope','$timeout', 'HomeService', function($scope, $timeout, HomeService) {
     $scope.data = {
-        id: '9eb9123d-1d8a-493a-a92d-e0a32cca422f',
+        id: '9ce29050-6a63-4d1b-92d2-492eabe055a0',
         counter: 0
     };
     var stopped;
@@ -19,5 +19,6 @@ angular.module('mehmetcankerApp').controller("HomeController",['$scope','$timeou
         .then(function (response) {
             console.log(response);
         })
+        $scope.data.counter = 0;
     }
 }]);
