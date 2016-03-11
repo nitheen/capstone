@@ -45,29 +45,35 @@ function updateTimer(req, res, next) {
     var projectCount;
     //console.log(response);
 
-    r.table('customerData').get(dataID).toJSON().run(req.app._rdbConn, function(err, result){
-        if(err) {
+    r.table('customerData').get(dataID).toJSON().run(req.app._rdbConn, function (err, result) {
+        if (err) {
             return next(err);
         }
         console.log(result);
         var obj = JSON.parse(result);
         projectCount = obj['project_count'];
-        console.log("Project Count" + projectCount);
+        console.log("Project Count " + projectCount);
         projectCount = projectCount + 1;
         var response = {
             "project_number": projectCount,
-            "project_length":req.body.counter
+            "project_length": req.body.counter
         };
-        r.table('customerData').get(dataID).update({"project_count": projectCount}, {returnChanges: true}).run(req.app._rdbConn, function(err, result) {
-            if(err) {
+        r.table('customerData').get(dataID).update({"project_count": projectCount}, {returnChanges: true}).run(req.app._rdbConn, function (err, result) {
+            if (err) {
                 return next(err);
             }
         });
-        r.table('customerData').get(dataID).insert({"scene_count": response}, {returnChanges: true}).run(req.app._rdbConn, function(err, result) {
-            if(err) {
-                return next(err);
-            }
-        });
+        //r.table('customerData').get(dataID).insert({"scene_count": response}, {returnChanges: true}).run(req.app._rdbConn, function(err, result) {
+        //    if(err) {
+        //        return next(err);
+        //    }
+        //});
+        r.table('customerData').get(dataID).update({scene_count: r.row('scene_count').append(response)})
+            .run(req.app._rdbConn, function (err, result) {
+                if (err) {
+                    return next(err);
+                }
+            });
     });
 
     //r.table('customerData').get(dataID).update({"project_count": projectCount}, {returnChanges: true}).run(req.app._rdbConn, function(err, result) {
@@ -76,8 +82,8 @@ function updateTimer(req, res, next) {
     //  }
     //});
 
-    r.table('customerData').get(dataID).update({"session_length": data}, {returnChanges: true}).run(req.app._rdbConn, function(err, result) {
-        if(err) {
+    r.table('customerData').get(dataID).update({"session_length": data}, {returnChanges: true}).run(req.app._rdbConn, function (err, result) {
+        if (err) {
             return next(err);
         }
         res.json(result.changes[0].new_val);
@@ -86,14 +92,14 @@ function updateTimer(req, res, next) {
 
 
 function listData(req, res, next) {
-    r.table('customerData').orderBy({index: 'createdAt'}).run(req.app._rdbConn, function(err, cursor) {
-        if(err) {
+    r.table('customerData').orderBy({index: 'createdAt'}).run(req.app._rdbConn, function (err, cursor) {
+        if (err) {
             return next(err);
         }
 
         //Retrieve all the items in an array.
-        cursor.toArray(function(err, result) {
-            if(err) {
+        cursor.toArray(function (err, result) {
+            if (err) {
                 return next(err);
             }
 
@@ -111,8 +117,8 @@ function createData(req, res, next) {
 
     console.dir(data);
 
-    r.table('customerData').insert(data, {returnChanges: true}).run(req.app._rdbConn, function(err, result) {
-        if(err) {
+    r.table('customerData').insert(data, {returnChanges: true}).run(req.app._rdbConn, function (err, result) {
+        if (err) {
             return next(err);
         }
 
@@ -126,8 +132,8 @@ function createData(req, res, next) {
 function getData(req, res, next) {
     var data = req.params.id;
 
-    r.table('customerData').get(data).run(req.app._rdbConn, function(err, result) {
-        if(err) {
+    r.table('customerData').get(data).run(req.app._rdbConn, function (err, result) {
+        if (err) {
             return next(err);
         }
 
@@ -142,8 +148,8 @@ function updateData(req, res, next) {
     var data = req.body;
     var dataID = req.params.id;
 
-    r.table('customerData').get(dataID).update(data, {returnChanges: true}).run(req.app._rdbConn, function(err, result) {
-        if(err) {
+    r.table('customerData').get(dataID).update(data, {returnChanges: true}).run(req.app._rdbConn, function (err, result) {
+        if (err) {
             return next(err);
         }
 
@@ -157,8 +163,8 @@ function updateData(req, res, next) {
 function deleteData(req, res, next) {
     var dataID = req.params.id;
 
-    r.table('customerData').get(dataID).delete().run(req.app._rdbConn, function(err, result) {
-        if(err) {
+    r.table('customerData').get(dataID).delete().run(req.app._rdbConn, function (err, result) {
+        if (err) {
             return next(err);
         }
 
@@ -201,48 +207,48 @@ async.waterfall([
     },
     function createDatabase(connection, callback) {
         //Create the database if needed.
-        r.dbList().contains(config.rethinkdb.db).do(function(containsDb) {
+        r.dbList().contains(config.rethinkdb.db).do(function (containsDb) {
             return r.branch(
                 containsDb,
                 {created: 0},
                 r.dbCreate(config.rethinkdb.db)
             );
-        }).run(connection, function(err) {
+        }).run(connection, function (err) {
             callback(err, connection);
         });
     },
     function createTable(connection, callback) {
         //Create the table if needed.
-        r.tableList().contains('customerData').do(function(containsTable) {
+        r.tableList().contains('customerData').do(function (containsTable) {
             return r.branch(
                 containsTable,
                 {created: 0},
                 r.tableCreate('customerData')
             );
-        }).run(connection, function(err) {
+        }).run(connection, function (err) {
             callback(err, connection);
         });
     },
     function createIndex(connection, callback) {
         //Create the index if needed.
-        r.table('customerData').indexList().contains('createdAt').do(function(hasIndex) {
+        r.table('customerData').indexList().contains('createdAt').do(function (hasIndex) {
             return r.branch(
                 hasIndex,
                 {created: 0},
                 r.table('customerData').indexCreate('createdAt')
             );
-        }).run(connection, function(err) {
+        }).run(connection, function (err) {
             callback(err, connection);
         });
     },
     function waitForIndex(connection, callback) {
         //Wait for the index to be ready.
-        r.table('customerData').indexWait('createdAt').run(connection, function(err, result) {
+        r.table('customerData').indexWait('createdAt').run(connection, function (err, result) {
             callback(err, connection);
         });
     }
-], function(err, connection) {
-    if(err) {
+], function (err, connection) {
+    if (err) {
         console.error(err);
         process.exit(1);
         return;
