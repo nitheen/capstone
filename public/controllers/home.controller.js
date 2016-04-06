@@ -2,8 +2,12 @@ angular.module('mehmetcankerApp').controller("HomeController", ['$scope', '$time
 
     //ID of the database attribute and inital counter value
     $scope.data = {
-        id: 'aa5188a2-0c28-424b-913c-b27f5a67d6ce',
-        counter: 0
+        id: 'a943575b-5c53-4fb6-9f2e-d5ed93a99412',
+        counter: 0,
+        browser: null,
+        version: null,
+        os: null,
+        error: null
     };
     var stopped;
 
@@ -32,12 +36,13 @@ angular.module('mehmetcankerApp').controller("HomeController", ['$scope', '$time
 
     //Method to throw error and record browser and OS details
     $scope.throwError = function () {
+        var nVer = navigator.appVersion;
+        var nAgt = navigator.userAgent;
+        var browserName = navigator.appName;
+        var fullVersion = '' + parseFloat(navigator.appVersion);
+        var nameOffset, verOffset, ix;
+
         try {
-            var nVer = navigator.appVersion;
-            var nAgt = navigator.userAgent;
-            var browserName = navigator.appName;
-            var fullVersion = '' + parseFloat(navigator.appVersion);
-            var nameOffset, verOffset, ix;
 
             // In Chrome, the true version is after "Chrome"
             if ((verOffset = nAgt.indexOf("Chrome")) != -1) {
@@ -67,16 +72,20 @@ angular.module('mehmetcankerApp').controller("HomeController", ['$scope', '$time
             if ((ix = fullVersion.indexOf(" ")) != -1)
                 fullVersion = fullVersion.substring(0, ix);
 
-            alert(''
-                + 'Browser name  = ' + browserName + '::'
-                + 'Full version  = ' + fullVersion +
-                ':: Your OS: ' + navigator.platform
-            )
-
             throw "Capturing a sample error";
+
+
         }
         catch (e) {
-            alert(e);
+
+            $scope.data.browser = browserName;
+            $scope.data.version = fullVersion;
+            $scope.data.os = navigator.platform;
+            $scope.data.error = e;
+            HomeService.throwError($scope.data)
+                .then(function (response) {
+                    console.log(response);
+                })
         }
     }
 }]);

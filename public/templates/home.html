@@ -17,7 +17,7 @@
 
                 <li class="active">
                     <a href="blank-page.html">
-                        <i class="fa fa-fw fa-file"></i> Sample Dashboard
+                        <i class="fa fa-fw fa-file"></i> Events Dashboard
                     </a>
                 </li>
             </ul>
@@ -31,40 +31,44 @@
                 <div class="col-lg-12">
                     <h1 class="page-header">
                         Capstone
-                        <small>Sample Dashboard</small>
+                        <small> Dashboard</small>
                     </h1>
                 </div>
             </div>
             <!-- /.row -->
-            <div class="form-group">
-                <form>
-                    <table>
-                        <tr>
-                            <td>
-                                <button type="button" class="btn btn-default" ng-click="countdown()">Start Timer</button>
-                            </td>
-                            <td>
-                                <input id="timer" ng-model="data.counter"></input>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <button type="button" class="btn btn-default" ng-click="stop()">Stop Timer</button>
-                            </td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <button type="submit" ng-click="update()" class="btn btn-default">Update Duration</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <button type="submit" ng-click="throwError()" class="btn btn-default">Throw Error</button>
-                            </td>
-                        </tr>
-                    </table>
-                </form>
+            <div class="row  center-block">
+                <div class="form-group">
+                    <form>
+                        <table class="table">
+                            <tr>
+                                <td>
+                                    <input id="timer" ng-model="data.counter"></input>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <button type="button" class="btn btn-default" ng-click="countdown()">Start Timer</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <button type="button" class="btn btn-default" ng-click="stop()">Stop Timer</button>
+                                </td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <button type="submit" ng-click="update()" class="btn btn-default">Update Duration</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <button type="submit" ng-click="throwError()" class="btn btn-default">Throw Error</button>
+                                </td>
+                            </tr>
+                        </table>
+                    </form>
+                </div>
             </div>
         </div>
         <!-- /.container-fluid -->

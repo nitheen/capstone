@@ -26,6 +26,13 @@ app.route('/index/:id')
 
 app.route('/update/:id')
     .post(updateTimer);
+
+app.route('/throwError/:id')
+    .post(throwError);
+
+app.route('/statsd')
+    .get(statsd);
+
 //If we reach this middleware the route could not be handled and must be unknown.
 app.use(handle404);
 
@@ -36,23 +43,17 @@ app.use(handleError);
  */
 
 function updateTimer(req, res, next) {
-    console.log(req.params);
-    console.log(req.body);
+
     var data = req.body.counter;
     var dataID = req.params.id;
-    console.log("Got a POST request for the homepage");
-    console.log(data);
     var projectCount;
-    //console.log(response);
 
     r.table('customerData').get(dataID).toJSON().run(req.app._rdbConn, function (err, result) {
         if (err) {
             return next(err);
         }
-        console.log(result);
         var obj = JSON.parse(result);
         projectCount = obj['project_count'];
-        console.log("Project Count " + projectCount);
         projectCount = projectCount + 1;
         var response = {
             "project_number": projectCount,
@@ -63,11 +64,7 @@ function updateTimer(req, res, next) {
                 return next(err);
             }
         });
-        //r.table('customerData').get(dataID).insert({"scene_count": response}, {returnChanges: true}).run(req.app._rdbConn, function(err, result) {
-        //    if(err) {
-        //        return next(err);
-        //    }
-        //});
+
         r.table('customerData').get(dataID).update({scene_count: r.row('scene_count').append(response)})
             .run(req.app._rdbConn, function (err, result) {
                 if (err) {
@@ -75,12 +72,6 @@ function updateTimer(req, res, next) {
                 }
             });
     });
-
-    //r.table('customerData').get(dataID).update({"project_count": projectCount}, {returnChanges: true}).run(req.app._rdbConn, function(err, result) {
-    //  if(err) {
-    //    return next(err);
-    //  }
-    //});
 
     r.table('customerData').get(dataID).update({"session_length": data}, {returnChanges: true}).run(req.app._rdbConn, function (err, result) {
         if (err) {
@@ -90,6 +81,27 @@ function updateTimer(req, res, next) {
     });
 }
 
+/*
+ * Logs the errors in the DB along with browser name and version
+ */
+
+function throwError(req, res, next) {
+    var dataID = req.params.id;
+    var response = {
+        "browser": req.body.browser,
+        "version": req.body.version,
+        "os:": req.body.os,
+        "error:": req.body.error
+    };
+    console.log(dataID);
+
+    r.table('customerData').get(dataID).update({errors: r.row('errors').append(response)})
+        .run(req.app._rdbConn, function (err, result) {
+            if (err) {
+                return next(err);
+            }
+        });
+}
 
 function listData(req, res, next) {
     r.table('customerData').orderBy({index: 'createdAt'}).run(req.app._rdbConn, function (err, cursor) {
@@ -133,6 +145,21 @@ function getData(req, res, next) {
     var data = req.params.id;
 
     r.table('customerData').get(data).run(req.app._rdbConn, function (err, result) {
+        if (err) {
+            return next(err);
+        }
+
+        res.json(result);
+    });
+}
+
+/*
+ * Get data from the StatsD table
+ */
+function statsd(req, res, next) {
+    var data = req.params.id;
+
+    r.table('ingest').get(data).run(req.app._rdbConn, function (err, result) {
         if (err) {
             return next(err);
         }

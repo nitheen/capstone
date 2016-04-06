@@ -18,6 +18,27 @@ angular.module('mehmetcankerApp').factory("HomeService",
                     console.log("Error.");
                     return error;
                 });
+            },
+            throwError: function(data) {
+                    return $http({
+                    url: '/throwError/' + data.id,
+                    method: "POST",
+                    data: JSON.stringify({
+                        browser: data.browser,
+                        version: data.version,
+                        os: data.os,
+                        error: data.error
+                    }),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }).success(function(data, status, headers, config) {
+                    console.log("Success!");
+                    return data;
+                }).error(function(error, status, headers, config) {
+                    console.log("Error.");
+                    return error;
+                });
             }
         }
     }
