@@ -2,7 +2,7 @@ angular.module('mehmetcankerApp').controller("HomeController", ['$scope', '$time
 
     //ID of the database attribute and inital counter value
     $scope.data = {
-        id: 'a943575b-5c53-4fb6-9f2e-d5ed93a99412',
+        id: 'd1bfa5a9-5421-4a3f-9404-4287482e8351',
         counter: 0,
         browser: null,
         version: null,

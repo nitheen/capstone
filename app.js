@@ -20,7 +20,6 @@ app.route('/index')
     .post(createData);
 
 app.route('/index/:id')
-    .get(getData)
     .put(updateData)
     .delete(deleteData);
 
@@ -33,13 +32,18 @@ app.route('/throwError/:id')
 app.route('/statsd')
     .get(statsd);
 
+app.route('/eventsDashboard/:id')
+    .get(getData);
+
 //If we reach this middleware the route could not be handled and must be unknown.
 app.use(handle404);
 
 //Generic error handling middleware.
 app.use(handleError);
+
+
 /*
- * Retrieve all items.
+ * Store timer events and errors in the database
  */
 
 function updateTimer(req, res, next) {
@@ -90,8 +94,8 @@ function throwError(req, res, next) {
     var response = {
         "browser": req.body.browser,
         "version": req.body.version,
-        "os:": req.body.os,
-        "error:": req.body.error
+        "os": req.body.os,
+        "error": req.body.error
     };
     console.log(dataID);
 
@@ -143,13 +147,13 @@ function createData(req, res, next) {
  */
 function getData(req, res, next) {
     var data = req.params.id;
-
-    r.table('customerData').get(data).run(req.app._rdbConn, function (err, result) {
+    console.log(data);
+    r.table('customerData').get(data).toJSON().run(req.app._rdbConn, function (err, result) {
         if (err) {
             return next(err);
         }
-
-        res.json(result);
+        console.log(result);
+        res.send(result);
     });
 }
 

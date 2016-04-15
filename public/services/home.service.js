@@ -39,6 +39,21 @@ angular.module('mehmetcankerApp').factory("HomeService",
                     console.log("Error.");
                     return error;
                 });
+            },
+            eventsDashboard: function(data) {
+                return $http({
+                    url: '/eventsDashboard/' + data.id,
+                    method: "GET",
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }).success(function(data, status, headers, config) {
+                    console.log("Success!");
+                    return data;
+                }).error(function(error, status, headers, config) {
+                    console.log("Error.");
+                    return error;
+                });
             }
         }
     }
