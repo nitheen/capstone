@@ -163,7 +163,7 @@ function getData(req, res, next) {
 function statsd(req, res, next) {
     var data = req.params.id;
 
-    r.db('statsd').table('ingest').get(data).run(req.app._rdbConn, function (err, result) {
+    r.table('ingest').run(req.app._rdbConn, function (err, result) {
         if (err) {
             return next(err);
         }

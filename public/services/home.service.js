@@ -1,5 +1,6 @@
 angular.module('mehmetcankerApp').factory("HomeService",
     function($http) {
+        var property;
         return {
             update: function(data) {
                 return $http({
@@ -54,6 +55,11 @@ angular.module('mehmetcankerApp').factory("HomeService",
                     console.log("Error.");
                     return error;
                 });
+            },getProperty: function () {
+                return property;
+            },
+            setProperty: function(value) {
+                property = value;
             }
         }
     }
